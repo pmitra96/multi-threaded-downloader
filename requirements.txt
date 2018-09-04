@@ -21,3 +21,5 @@ six==1.11.0
 urllib3==1.23
 vlc==0.0.0
 youtube-dl==2018.8.28
+nltk==3.3.0
+numpy==1.14.3
