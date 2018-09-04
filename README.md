@@ -1,17 +1,17 @@
 # multi-threaded-downloader
 **A downloader to download whole tv series from index of * movie name * servers**
 
->to Install
+to Install
 (i would recommend you to use virtualenv)
-----
+-
 **_clone the repo and cd into directory_**
-----
+-
 1)`pip install -r requirements.txt`
-----
+-
 2)open python shell
-----
+-
 3)`from tv_download import *`
-----
+-
 
 ### Features
 >downloads videos from urls like youtube etc
