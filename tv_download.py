@@ -96,7 +96,7 @@ def download(url,download_path=os.getcwd()):
             print "the link is not downloadable"
 
 ## download season wise takes season url and starting episode as argument
-def download_1_season_multithread(pageurl,start=1):
+def download_1_deep(pageurl,start=1):
     if is_restricted(pageurl):
         print "dowloading single youtube video"
         currentthread = DownloadThread(download_restricted,pageurl)
@@ -224,7 +224,7 @@ def fast_multi_thread_download(url):
             print "no file " + part
         
 
-def play_with_vlc(playurl):
+def stream_online(playurl):
     Instance = vlc.Instance()
     player = Instance.media_player_new()
     Media = Instance.media_new(playurl)
@@ -260,14 +260,11 @@ def download_playlist(url,is_audio=1):
 
 
 
-
-
-
 def sort_util_generate_key(filename):
     return int(filename.split("part")[-1])
 
 
-def stich_parts(filename):
+def stitch_parts(filename):
     files = os.listdir(os.getcwd())
     if filename in files:
         print "file already exists"
