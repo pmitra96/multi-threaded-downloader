@@ -3,12 +3,17 @@
 
 >to Install
 (i would recommend you to use virtualenv)
+----
 **_clone the repo and cd into directory_**
+----
 1)`pip install -r requirements.txt`
+----
 2)open python shell
+----
 3)`from tv_download import *`
+----
 
-Features
+### Features
 >downloads videos from urls like youtube etc
 *download_restricted(url) 
 >downloads any url even the youtube ones
