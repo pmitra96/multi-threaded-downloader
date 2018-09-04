@@ -14,23 +14,23 @@ to Install
 
 ### Features
 >downloads videos from urls like youtube etc
-* download_restricted(url) 
+* `download_restricted(url)` 
 >downloads any url even the youtube ones
-* download(url) 
+* `download(url)` 
 >starts from current url and downloads everything upto 1 level of current url(to download 1 season)
-* download_1_loop(url) 
+* `download_1_loop(url)` 
 >starts with current url and downloads everything downloadable with current url as parent(used for downloading whole tv shows from index of websites)
-* recursive_download(url)
+* `recursive_download(url)`
 >resumes any url download 
-* resume_download(url,start=0,end=0) 
+* `resume_download(url,start=0,end=0)` 
 >downloads any file by downloading the file in parts and stiching them back together
-* fast_multi_thread_download(url) 
+* `fast_multi_thread_download(url)` 
 >can stream any media url directly without downloading
-* stream_online(url) 
+* `stream_online(url)` 
 >downloads youtube playlist
-* download_playlist(youtube_playlist_url) 
+* `download_playlist(youtube_playlist_url)` 
 >stich parts of files together , where parts are named filename.part1,filename.part2
-* stich_parts(filename) 
+* `stich_parts(filename)` 
 
 
 ### To Do:
