@@ -13,6 +13,8 @@ import nltk
 from nltk.stem.lancaster import LancasterStemmer
 import json
 import numpy as np
+from pydub import AudioSegment
+from pydub.utils import which
 
 
 class DownloadThread(threading.Thread):
@@ -31,13 +33,11 @@ def is_restricted(url):
     else:
         return False
 
-def download_restricted(url):
+def download_restricted(url,pref_format="mp3"):
     print "youtube download started"
     video = pafy.new(url, gdata=True)
-    #print "got video object"
     video_format = video.getbest()
     path = Path(os.getcwd()+"/"+"youtube")
-    #print path
     if Path.exists(path):
         category_path = Path(os.getcwd()+"/"+"youtube/"+str(video.category))
         if str(video.category) == "Music":
@@ -56,16 +56,22 @@ def download_restricted(url):
                 pass
         #print category_path
         if Path.exists(category_path):
-            video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+            if pref_format=="mp3":
+                AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
+            
         else:
             os.mkdir("youtube/"+video.category)
-            #print "category directory created"
-            video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+            if pref_format=="mp3":
+                AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
+    
     else:
         os.mkdir("youtube")
         os.mkdir("youtube/"+video.category)
-        video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
-
+        file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+        if pref_format=="mp3":
+                AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
         
 
 def is_downloadable(url):
@@ -158,11 +164,11 @@ def recursive_download(url,download_path= os.getcwd(),in_parts = 0):
 
 
 def exp(url):
-    page = urllib2.urlopen(url).read()
-    soup = BeautifulSoup(page)
-    soup.prettify()
-    for anchor in soup.findAll('a', href=True)[1::]:
-        print url+anchor["href"]
+    
+    print "sa"
+        
+            
+
     
 
 def get_current_size(filename):
@@ -256,15 +262,20 @@ def download_playlist(url,is_audio=1):
             category_path = Path(os.getcwd()+"/"+"youtube/"+"Music")
             print "looks like you are trying to download a music video downloading only audio"
             if Path.exists(category_path):
-                video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+                file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+                if is_audio == 1:
+                    AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
             else:
                 os.mkdir("youtube/"+"Music")
-                #print "category directory created"
-                video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+                file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+                if is_audio == 1:
+                    AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
         else:
             os.mkdir("youtube")
             os.mkdir("youtube/"+"Music")
-            video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+            if is_audio == 1:
+                AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
 
 
 
