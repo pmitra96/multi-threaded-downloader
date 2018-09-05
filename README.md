@@ -30,7 +30,9 @@ to Install
 >downloads youtube playlist
 * `download_playlist(youtube_playlist_url)` 
 >stich parts of files together , where parts are named filename.part1,filename.part2
-* `stich_parts(filename)` 
+* `stich_parts(filename)`
+>classify a video as Music or Movie based on its name
+* `classify(videoname)`
 
 
 ### To Do:
