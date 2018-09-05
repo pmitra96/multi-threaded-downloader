@@ -9,7 +9,10 @@ import sys
 from pathlib import Path
 import os
 import vlc
-
+import nltk
+from nltk.stem.lancaster import LancasterStemmer
+import json
+import numpy as np
 
 
 class DownloadThread(threading.Thread):
@@ -278,7 +281,66 @@ def stitch_parts(filename):
                 with open(req_file,"r") as pf:
                     f.write(pf.read())
 
-    
+
+
+# Classifier Functions using Weights.JSON
+data_file = 'weights.json'
+stemmer = LancasterStemmer()
+with open('weights.json', 'r') as f:
+        raw = json.load(f)
+
+words = raw['words']
+synapse_0 = np.array(raw['synapse0'])
+synapse_1 = np.array(raw['synapse1'])
+classes = raw['classes']
+
+def sigmoid(x):
+    output = 1/(1+np.exp(-x))
+    return output
+
+def cleanup_sentence(sentence):
+    # tokenize the pattern
+    sentence_words = nltk.word_tokenize(sentence)
+    # stem each word
+    sentence_words = [stemmer.stem(word.lower()) for word in sentence_words]
+    return sentence_words
+
+def bag_of_words(sentence,words,show_details=False):
+    # tokenize the pattern
+    sentence_words = cleanup_sentence(sentence)
+    # bag of words
+    bag = [0]*len(words)
+    for s in sentence_words:
+        for i,w in enumerate(words):
+            if w==s:
+                bag[i]=1
+                if show_details:
+                    print("Found in bag %s" % w)
+    return(np.array(bag))
+
+def think(sentence, show_details=False):
+    x = bag_of_words(sentence.lower(), words, show_details)
+    if show_details:
+        print ("sentence:", sentence, "\n bag_of_words:", x)
+    # input layer is our bag of words
+    l0 = x
+    # matrix multiplication of input and hidden layer
+    l1 = sigmoid(np.dot(l0, synapse_0))
+    # output layer
+    l2 = sigmoid(np.dot(l1, synapse_1))
+    return l2
+
+ERROR_THRESHOLD = 0.2
+def classify(sentence, show_details=False):
+    print("Classifier between Movies and Music is running....")
+    results = think(sentence, show_details)
+
+    results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD ] 
+    results.sort(key=lambda x: x[1], reverse=True) 
+    return_results =[[classes[r[0]],r[1]] for r in results]
+    print ("%s \n classification: %s" % (sentence, return_results))
+    return return_results
+
 if __name__ == "__main__":
     
     exp(sys.argv[1])
