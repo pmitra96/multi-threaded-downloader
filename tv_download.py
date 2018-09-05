@@ -42,7 +42,13 @@ def download_restricted(url):
             user_resp = raw_input("would you like to download only audio file ? (y or n) \n")
             if user_resp == "y":
                 print "finding the best audio quality..."
-                video_format = video.getbestaudio()
+                if video.getbestaudio(preftype="mp3") == None:
+                    video_format = video.getbestaudio()
+                else:
+                    video_format = video.getbestaudio(preftype="mp3")
+
+
+                print video_format
             else:
                 pass
         #print category_path
