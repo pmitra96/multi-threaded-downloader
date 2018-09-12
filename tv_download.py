@@ -16,6 +16,7 @@ import numpy as np
 from pydub import AudioSegment
 from pydub.utils import which
 
+pafy.BACK_END = "internal"
 
 class DownloadThread(threading.Thread):
     def __init__(self, target, *args):
@@ -250,7 +251,6 @@ def stream_online(playurl):
 
 def download_playlist(url,is_audio=1):
     playlist = pafy.get_playlist(url)
-    
     for video in playlist['items']:
         video = video["pafy"]
         if is_audio == 1:
@@ -300,7 +300,14 @@ def stitch_parts(filename):
 
 
 
+
+
+
+
+
+############################################
 # Classifier Functions using Weights.JSON
+############################################
 data_file = 'weights.json'
 stemmer = LancasterStemmer()
 with open('weights.json', 'r') as f:
@@ -360,6 +367,6 @@ def classify(sentence, show_details=False):
 
 if __name__ == "__main__":
     
-    exp(sys.argv[1])
+    download(sys.argv[1])
 
     
