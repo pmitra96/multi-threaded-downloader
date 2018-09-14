@@ -18,6 +18,8 @@ from pydub.utils import which
 
 pafy.BACK_END = "internal"
 
+DOWNLOAD_PATH = os.path.dirname(os.path.realpath(__file__))
+
 class DownloadThread(threading.Thread):
     def __init__(self, target, *args):
         self._target = target
@@ -38,9 +40,9 @@ def download_restricted(url,pref_format="mp3"):
     print "youtube download started"
     video = pafy.new(url, gdata=True)
     video_format = video.getbest()
-    path = Path(os.getcwd()+"/"+"youtube")
+    path = Path(DOWNLOAD_PATH+"/"+"youtube")
     if Path.exists(path):
-        category_path = Path(os.getcwd()+"/"+"youtube/"+str(video.category))
+        category_path = DOWNLOAD_PATH+"/"+"youtube/"+str(video.category)
         if str(video.category) == "Music":
             print "looks like you are trying to download a music video"
             user_resp = raw_input("would you like to download only audio file ? (y or n) \n")
@@ -56,24 +58,23 @@ def download_restricted(url,pref_format="mp3"):
             else:
                 pass
         #print category_path
-        if Path.exists(category_path):
-            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+        if Path.exists(Path(category_path)):
+            file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+str(video.category))
             if pref_format=="mp3":
                 AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
             
         else:
-            os.mkdir("youtube/"+video.category)
-            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+            os.makedirs(category_path)
+            file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+str(video.category))
             if pref_format=="mp3":
                 AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
     
     else:
-        os.mkdir("youtube")
-        os.mkdir("youtube/"+video.category)
-        file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+str(video.category))
+        os.makedirs(category_path)
+        file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+str(video.category))
         if pref_format=="mp3":
                 AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
-        
+    os.remove(file)        
 
 def is_downloadable(url):
     """
@@ -90,26 +91,29 @@ def is_downloadable(url):
     return True
 
 
-def download(url,download_path=os.getcwd()):
-    if is_downloadable(url):
-        filename = url.split("/")[-1]
-        start = get_current_size(filename)
-        r = requests.get(url, stream=True)
-        file_path = download_path+"/"+filename
-        with open(file_path, 'wb') as f:
-            total_length = int(r.headers.get('content-length'))
-            
-            for chunk in progress.bar(r.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1): 
-                if chunk:
-                    f.write(chunk)
-                    
-                    f.flush()
+def download(url,download_path=DOWNLOAD_PATH):
+    if "list" in url:
+        download_playlist(url)
     else:
-        if is_restricted(url):
-            print "looks like a youtube url"
-            download_restricted(url)
+        if is_downloadable(url):
+            filename = url.split("/")[-1]
+            start = get_current_size(filename)
+            r = requests.get(url, stream=True)
+            file_path = download_path+"/"+filename
+            with open(file_path, 'wb') as f:
+                total_length = int(r.headers.get('content-length'))
+                
+                for chunk in progress.bar(r.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1): 
+                    if chunk:
+                        f.write(chunk)
+                        
+                        f.flush()
         else:
-            print "the link is not downloadable"
+            if is_restricted(url):
+                print "looks like a youtube url"
+                download_restricted(url)
+            else:
+                print "the link is not downloadable"
 
 ## download season wise takes season url and starting episode as argument
 def download_1_deep(pageurl,start=1):
@@ -133,7 +137,7 @@ def download_1_deep(pageurl,start=1):
             thread.join()
             
 
-def recursive_download(url,download_path= os.getcwd(),in_parts = 0):
+def recursive_download(url,download_path= DOWNLOAD_PATH,in_parts = 0):
     if is_downloadable(url):
         print "downloading " + url
         if in_parts == 1:
@@ -173,7 +177,7 @@ def exp(url):
     
 
 def get_current_size(filename):
-    path = Path(os.getcwd()+"/"+filename)
+    path = Path(DOWNLOAD_PATH+"/"+filename)
     if Path.exists(path):
         return path.stat().st_size
     else:
@@ -257,25 +261,25 @@ def download_playlist(url,is_audio=1):
             video_format = video.getbestaudio()
         else:
             video_format = video.getbest()
-        path = Path(os.getcwd()+"/"+"youtube")
+        path = Path(DOWNLOAD_PATH+"/"+"youtube")
         if Path.exists(path):
-            category_path = Path(os.getcwd()+"/"+"youtube/"+"Music")
-            print "looks like you are trying to download a music video downloading only audio"
-            if Path.exists(category_path):
-                file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+            category_path = DOWNLOAD_PATH+"/"+"youtube/"+"Music"
+            print "looks like you are trying to download a music video, so downloading only audio"
+            if Path.exists(Path(category_path)):
+                file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+"Music")
                 if is_audio == 1:
                     AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
             else:
-                os.mkdir("youtube/"+"Music")
-                file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+                os.makedirs(category_path)
+                file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+"Music")
                 if is_audio == 1:
                     AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
         else:
-            os.mkdir("youtube")
-            os.mkdir("youtube/"+"Music")
-            file = video_format.download(filepath = os.getcwd()+"/"+"youtube/"+"Music")
+            os.makedirs(category_path)
+            file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+"Music")
             if is_audio == 1:
                 AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
+        os.remove(file)
 
 
 
@@ -285,7 +289,7 @@ def sort_util_generate_key(filename):
 
 
 def stitch_parts(filename):
-    files = os.listdir(os.getcwd())
+    files = os.listdir(DOWNLOAD_PATH)
     if filename in files:
         print "file already exists"
     else:
@@ -297,6 +301,7 @@ def stitch_parts(filename):
             for req_file in req_list:
                 with open(req_file,"r") as pf:
                     f.write(pf.read())
+                os.remove(req_file)
 
 
 
@@ -308,15 +313,7 @@ def stitch_parts(filename):
 ############################################
 # Classifier Functions using Weights.JSON
 ############################################
-data_file = 'weights.json'
-stemmer = LancasterStemmer()
-with open('weights.json', 'r') as f:
-        raw = json.load(f)
 
-words = raw['words']
-synapse_0 = np.array(raw['synapse0'])
-synapse_1 = np.array(raw['synapse1'])
-classes = raw['classes']
 
 def sigmoid(x):
     output = 1/(1+np.exp(-x))
@@ -356,6 +353,15 @@ def think(sentence, show_details=False):
 
 ERROR_THRESHOLD = 0.2
 def classify(sentence, show_details=False):
+    data_file = DOWNLOAD_PATH+'/weights.json'
+    stemmer = LancasterStemmer()
+    with open(data_file, 'r') as f:
+        raw = json.load(f)
+
+    words = raw['words']
+    synapse_0 = np.array(raw['synapse0'])
+    synapse_1 = np.array(raw['synapse1'])
+    classes = raw['classes']
     print("Classifier between Movies and Music is running....")
     results = think(sentence, show_details)
 
@@ -366,7 +372,7 @@ def classify(sentence, show_details=False):
     return return_results
 
 if __name__ == "__main__":
-    
+    print os.path.dirname(os.path.realpath(__file__))
     download(sys.argv[1])
 
     
