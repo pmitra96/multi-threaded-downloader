@@ -40,7 +40,7 @@ else
 >classify a video as Music or Movie based on its name
 * `classify(videoname)`
 >download whole tv show just by entering its name
-* `download_complete_series(videoname)`
+* `download_complete_series(tv_series)`
 
 ### To Do:
 * make the code object oriented
