@@ -338,7 +338,7 @@ def get_related_links(query,anchor_list):
 
 
 
-def get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_parts = 0,count = 0,fail =0):
+def get_first_downloadable_link_speed(url,query,fail =0,download_path= os.getcwd(),in_parts = 0,count = 0):
     if is_downloadable(url):
         start = datetime.now()
         print "downloading " + url
@@ -355,7 +355,7 @@ def get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_pa
         except Exception as e:
             if fail <=1 :
                 ssl._DEFAULT_CIPHERS = ('DES-CBC3-SHA')
-                return get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_parts = 0,count = 0,fail+1)
+                return get_first_downloadable_link_speed(url,query,fail+1,download_path= os.getcwd(),in_parts = 0,count = 0)
             else:
                 pass
         req.add_header('User-agent', 'Mozilla 5.10')
@@ -364,7 +364,7 @@ def get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_pa
         soup.prettify()
         anchor_list = soup.findAll('a', href=True)[1::]
         anchor = get_related_links(query,anchor_list)[0]
-        return get_first_downloadable_link_speed(url + anchor['href'],query,download_path,in_parts,count+1)
+        return get_first_downloadable_link_speed(url + anchor['href'],query,fail+1,download_path,in_parts,count+1)
             
 
 def get_time_diff(start,end):
