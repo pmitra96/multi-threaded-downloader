@@ -1,5 +1,5 @@
 # multi-threaded-downloader
-**A downloader to download whole tv series from index of * movie name * servers**
+**A downloader to download whole tv series**
 
 to Install
 (i would recommend you to use virtualenv)
@@ -11,6 +11,12 @@ to Install
 2)open python shell
 
 3)`from tv_download import *`
+
+For command line usage 
+if you have a virtualenv for this project
+* `alias d="workon $YOURVIRTUALENV;python $PATH_TO_tv_download.py"`
+else 
+* `alias d=python $PATH_TO_tv_download.py`
 
 ### Features
 >downloads videos from urls like youtube etc
@@ -33,7 +39,8 @@ to Install
 * `stich_parts(filename)`
 >classify a video as Music or Movie based on its name
 * `classify(videoname)`
-
+>download whole tv show just by entering its name
+* `download_complete_series(videoname)`
 
 ### To Do:
 * make the code object oriented

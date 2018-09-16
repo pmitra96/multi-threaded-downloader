@@ -15,6 +15,11 @@ import json
 import numpy as np
 from pydub import AudioSegment
 from pydub.utils import which
+import scraper as sc
+from datetime import datetime, time
+from difflib import SequenceMatcher
+import jellyfish
+
 
 pafy.BACK_END = "internal"
 
@@ -278,7 +283,7 @@ def download_playlist(url,is_audio=1):
             os.makedirs(category_path)
             file = video_format.download(filepath = DOWNLOAD_PATH+"/"+"youtube/"+"Music")
             if is_audio == 1:
-                AudioSegment.from_file(file).export(file.split("webm")[0]+".mp3", format="mp3")
+                AudioSegment.from_file(file).export(file.split(".webm")[0]+".mp3", format="mp3")
         os.remove(file)
 
 
@@ -304,10 +309,79 @@ def stitch_parts(filename):
                 os.remove(req_file)
 
 
+def download_complete_series(tv_series):
+    base_url =get_base_url(tv_series,get_best_mirror(tv_series))
+    print "download from "+str(base_url)
+    recursive_download(base_url)
 
 
 
 
+def get_best_mirror(query):
+    speed_dict = {}
+    gresults = sc.g_search(query)[0:5]
+    for result in gresults:
+        print result.url 
+        try:
+            print get_first_downloadable_link_speed(result.url,query)
+            speed_dict[result.url] = get_first_downloadable_link_speed(result.url,query)
+        except Exception as e:
+            print e
+            speed_dict[result.url] = 99999
+        print speed_dict
+    return min(speed_dict, key=speed_dict.get)
+
+
+
+def get_related_links(query,anchor_list):
+        return filter(lambda x: similar(x,urllib2.quote(query)) >= 0.5 , anchor_list)
+
+
+
+def get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_parts = 0,count = 0,fail =0):
+    if is_downloadable(url):
+        start = datetime.now()
+        print "downloading " + url
+        resume_download(url,0,512)
+        end = datetime.now()
+        print "start is " + str(start)
+        print "end is " + str(end)
+        return get_time_diff(start,end)
+    else:
+        if count >= 3:
+            return 99999
+        try:
+            req = urllib2.Request(url)
+        except Exception as e:
+            if fail <=1 :
+                ssl._DEFAULT_CIPHERS = ('DES-CBC3-SHA')
+                return get_first_downloadable_link_speed(url,query,download_path= os.getcwd(),in_parts = 0,count = 0,fail+1)
+            else:
+                pass
+        req.add_header('User-agent', 'Mozilla 5.10')
+        page = urllib2.urlopen(req).read()
+        soup = BeautifulSoup(page)
+        soup.prettify()
+        anchor_list = soup.findAll('a', href=True)[1::]
+        anchor = get_related_links(query,anchor_list)[0]
+        return get_first_downloadable_link_speed(url + anchor['href'],query,download_path,in_parts,count+1)
+            
+
+def get_time_diff(start,end):
+    diff = end - start
+    return diff.seconds
+
+def similar(a, b):
+    return jellyfish.jaro_distance(unicode(a), unicode(b))
+
+def get_base_url(query_string,url):
+    url_list = url.split("/")
+    res_list = []
+    for c,i in enumerate(url_list[::-1]):
+        if similar(i,query_string) > 0.5:
+            res_list = url_list[0:len(url_list)-c]
+    base_url = "/".join(res_list)+"/"
+    return base_url            
 
 
 ############################################
