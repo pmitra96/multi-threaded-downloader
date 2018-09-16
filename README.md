@@ -41,6 +41,20 @@ else
 * `classify(videoname)`
 >download whole tv show just by entering its name
 * `download_complete_series(tv_series)`
+> added a simple classifier to classify based on audio data
+* To train 
+* `mkdir trainingData` and for each output label make a separate folder in training data and place training data there
+* `mkdir sampledata` and place all your test data there or lite 
+
+* `python classifier.py trainingData` 
+or 
+`from classifier import *` and `train(traindirname)`
+* To classify 
+`python testclassifier.py PATH_TO_FILE` or `from testclassifier import *` and `classify(filename)`
+
+
+
+
 
 ### To Do:
 * make the code object oriented
