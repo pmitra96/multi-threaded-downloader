@@ -29,7 +29,7 @@ matplotlib==2.2.3
 mlpy==0.1.0
 moviepy==0.2.3.5
 ndg-httpsclient==0.5.1
-nltk==3.3
+nltk==3.4.5
 numpy==1.15.1
 pafy==0.5.4
 pathlib==1.0.1
