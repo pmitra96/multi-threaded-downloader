@@ -24,7 +24,7 @@ ipaddress==1.0.22
 jellyfish==0.6.1
 kiwisolver==1.0.1
 libmagic==1.0
-lxml==4.2.5
+lxml==4.9.1
 matplotlib==2.2.3
 mlpy==0.1.0
 moviepy==0.2.3.5
